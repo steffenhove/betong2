@@ -9,7 +9,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
-
+import no.steffenhove.betongkalkulator.ui.FirkantInput
+import no.steffenhove.betongkalkulator.ui.KjerneInput
+import no.steffenhove.betongkalkulator.ui.TrekantInput  
+import android.content.Context
+import android.content.SharedPreferences
+import no.steffenhove.betongkalkulator.Dimensions
+import no.steffenhove.betongkalkulator.*
+import no.steffenhove.betongkalkulator.ui.*
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
