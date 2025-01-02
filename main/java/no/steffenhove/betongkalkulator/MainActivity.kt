@@ -15,12 +15,11 @@ import no.steffenhove.betongkalkulator.ui.*
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import no.steffenhove.betongkalkulator.Unit
+import no.steffenhove.betongkalkulator.ui.*
+import no.steffenhove.betongkalkulator.*
 
-enum class Unit(val display: String) {
-    METER("Meter"),
-    CENTIMETER("Centimeter"),
-    MILLIMETER("Millimeter")
-}
+
 
 data class Dimensions(val value: Double, val unit: Unit)
 
