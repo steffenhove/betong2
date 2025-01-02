@@ -5,7 +5,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment // Importer Alignment
+import androidx.compose.ui.Alignment
 import no.steffenhove.betongkalkulator.Unit
 
 @Composable
@@ -15,19 +15,3 @@ fun UnitDropdown(selectedUnit: Unit, onUnitSelected: (Unit) -> Unit) {
     Box(modifier = Modifier.fillMaxWidth().wrapContentSize(Alignment.TopStart)) {
         TextButton(onClick = { expanded = true }) {
             Text(selectedUnit.display)
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            units.forEach { unit ->
-                DropdownMenuItem(onClick = {
-                    onUnitSelected(unit)
-                    expanded = false
-                }) {
-                    Text(text = unit.display)
-                }
-            }
-        }
-    }
-}
