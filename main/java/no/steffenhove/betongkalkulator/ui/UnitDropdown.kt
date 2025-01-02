@@ -1,51 +1,32 @@
 package no.steffenhove.betongkalkulator.ui
 
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import no.steffenhove.betongkalkulator.Unit
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun UnitDropdown(selectedUnit: Unit, onUnitSelected: (Unit) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        TextField(
-            readOnly = true,
-            value = selectedUnit.display,
-            onValueChange = {},
-            label = { Text("Enhet") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            },
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
-        )
-        ExposedDropdownMenu(
+    val units = Unit.values().toList()
+    Box(modifier = Modifier.fillMaxWidth().wrapContentSize(Alignment.TopStart)) {
+        TextButton(onClick = { expanded = true }) {
+            Text(selectedUnit.display)
+        }
+        DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            Unit.values().forEach { selectionOption ->
+            units.forEach { unit ->
                 DropdownMenuItem(onClick = {
-                    onUnitSelected(selectionOption)
+                    onUnitSelected(unit)
                     expanded = false
                 }) {
-                    Text(text = selectionOption.display)
+                    Text(text = unit.display)
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun UnitDropdownPreview(){
-    var selectedUnit by remember { mutableStateOf(Unit.METER) }
-    UnitDropdown(selectedUnit = selectedUnit){
-        selectedUnit = it
     }
 }
