@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import no.steffenhove.betongkalkulator.Unit
-import no.steffenhove.betongkalkulator.ui.UnitDropdown
+import no.steffenhove.betongkalkulator.UnitDropdown
 
 @Composable
 fun FirkantInput(onCalculateClick: (String, String, String, Unit, Unit, Unit) -> Unit) {
