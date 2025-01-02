@@ -1,5 +1,7 @@
 package no.steffenhove.betongkalkulator
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,16 +13,15 @@ import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
 import no.steffenhove.betongkalkulator.ui.FirkantInput
 import no.steffenhove.betongkalkulator.ui.KjerneInput
-import no.steffenhove.betongkalkulator.ui.TrekantInput  
-import android.content.Context
-import android.content.SharedPreferences
-import no.steffenhove.betongkalkulator.Dimensions
-import no.steffenhove.betongkalkulator.*
-import no.steffenhove.betongkalkulator.ui.*
+import no.steffenhove.betongkalkulator.ui.TrekantInput
+import no.steffenhove.betongkalkulator.Unit as CustomUnit
+
 class MainActivity : AppCompatActivity() {
+    private lateinit var prefs: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        prefs = PreferenceManager.getDefaultSharedPreferences(this)
 
         setContent {
             MainActivityContent(context = this, prefs = prefs)
@@ -35,20 +36,34 @@ fun MainActivityContent(context: Context, prefs: SharedPreferences) {
 
     var selectedShape by remember { mutableStateOf("Kjerne") }
     var resultText by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
 
     Column(Modifier.padding(16.dp)) {
-        DropdownMenu(
-            expanded = true,
-            onDismissRequest = { /*TODO*/ }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
         ) {
-            DropdownMenuItem(onClick = { selectedShape = "Kjerne" }) {
-                Text("Kjerne")
-            }
-            DropdownMenuItem(onClick = { selectedShape = "Firkant" }) {
-                Text("Firkant")
-            }
-            DropdownMenuItem(onClick = { selectedShape = "Trekant" }) {
-                Text("Trekant")
+            TextField(
+                readOnly = true,
+                value = selectedShape,
+                onValueChange = { },
+                label = { Text("Shape") },
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                colors = ExposedDropdownMenuDefaults.textFieldColors()
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(onClick = { selectedShape = "Kjerne"; expanded = false }) {
+                    Text("Kjerne")
+                }
+                DropdownMenuItem(onClick = { selectedShape = "Firkant"; expanded = false }) {
+                    Text("Firkant")
+                }
+                DropdownMenuItem(onClick = { selectedShape = "Trekant"; expanded = false }) {
+                    Text("Trekant")
+                }
             }
         }
 
@@ -92,3 +107,23 @@ fun MainActivityContent(context: Context, prefs: SharedPreferences) {
         Text(text = resultText)
     }
 }
+
+fun calculateAndSave(
+    context: Context,
+    shapeType: String,
+    lengthDimensions: Dimensions? = null,
+    widthDimensions: Dimensions? = null,
+    thicknessDimensions: Dimensions? = null,
+    sideADimensions: Dimensions? = null,
+    sideBDimensions: Dimensions? = null,
+    sideCDimensions: Dimensions? = null,
+    coreDimensions: Dimensions? = null,
+    heightDimensions: Dimensions? = null,
+    unitSystem: String,
+    weightUnit: String
+): String {
+    // Implementer beregnings- og lagringslogikk her
+    return "Resultat av beregningen"
+}
+
+data class Dimensions(val value: Double, val unit: CustomUnit)
