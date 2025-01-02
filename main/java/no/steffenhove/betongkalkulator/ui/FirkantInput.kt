@@ -44,9 +44,4 @@ fun FirkantInput(onCalculateClick: (String, String, String, Unit, Unit, Unit) ->
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            onCalculateClick(length, width, thickness, selectedLengthUnit, selectedWidthUnit, selectedThicknessUnit)
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text("Beregn")
-        }
-    }
-}
+            onCalculateClick(length, width, thickness
