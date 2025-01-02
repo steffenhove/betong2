@@ -2,36 +2,31 @@ package no.steffenhove.betongkalkulator
 
 import android.os.Bundle
 import android.util.Log
-import android.view.ActionMode
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.*
+import android.widget.Button
+import android.widget.ListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.ActionMode
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.text.DecimalFormat
 
-
 class HistoryActivity : AppCompatActivity() {
-
     private lateinit var historyListView: ListView
-    private lateinit var adapter: ArrayAdapter<String>
-    private lateinit var history: MutableList<Calculation>
-    private val gson = Gson() // Opprett en Gson-instans
+    private lateinit var adapter: HistoryAdapter
+    private val gson = Gson()
+    private var history = mutableListOf<Calculation>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_history)
 
-        historyListView = findViewById(R.id.historyListView)
+        historyListView = findViewById(R.id.history_list_view)
         history = getHistory().toMutableList()
-
-        // Bruk en adapter som viser Calculation-objektene som strenger
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_activated_1, history.map { it.toStringRepresentation() })
+        adapter = HistoryAdapter(this, history.map { it.toStringRepresentation() }.toMutableList())
         historyListView.adapter = adapter
-        historyListView.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
 
-        historyListView.setMultiChoiceModeListener(object : AbsListView.MultiChoiceModeListener {
+        historyListView.setMultiChoiceModeListener(object: AbsListView.MultiChoiceModeListener {
             override fun onItemCheckedStateChanged(mode: ActionMode?, position: Int, id: Long, checked: Boolean) {
                 mode?.title = "${historyListView.checkedItemCount} valgt"
             }
@@ -67,8 +62,8 @@ class HistoryActivity : AppCompatActivity() {
         val buttonClearHistory = findViewById<Button>(R.id.button_clear_history)
         buttonClearHistory.setOnClickListener {
             clearHistory()
-            adapter.clear() // Tøm adapteren
-            adapter.notifyDataSetChanged() // Oppdater visningen
+            adapter.clear()
+            adapter.notifyDataSetChanged()
         }
     }
 
@@ -94,7 +89,7 @@ class HistoryActivity : AppCompatActivity() {
     }
 
     private fun clearHistory() {
-        saveHistory(emptyList()) // Lagre en tom liste for å tømme historikken
+        saveHistory(emptyList())
     }
 
     private fun sumSelectedItems() {
@@ -130,9 +125,10 @@ class HistoryActivity : AppCompatActivity() {
         history.removeAll(itemsToRemove)
         saveHistory(history)
         adapter.clear()
-        adapter.addAll(history.map{it.toStringRepresentation()})
+        adapter.addAll(history.map { it.toStringRepresentation() })
         adapter.notifyDataSetChanged()
     }
+
     private fun Calculation.toStringRepresentation(): String {
         return "Volum: ${this.volume} m³, Vekt: ${this.weight} kg, ${this.shape}, ${this.dimensions}, Dato: ${this.datetime}"
     }
