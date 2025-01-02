@@ -1,14 +1,12 @@
 package no.steffenhove.betongkalkulator.ui
 
-package no.steffenhove.betongkalkulator.ui
-
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import no.steffenhove.betongkalkulator.UnitDropdown
+import no.steffenhove.betongkalkulator.Unit
 
 @Composable
 fun KjerneInput(onCalculateClick: (String, String, Unit, Unit) -> Unit) {
@@ -30,9 +28,9 @@ fun KjerneInput(onCalculateClick: (String, String, Unit, Unit) -> Unit) {
             label = { Text("Høyde") },
             modifier = Modifier.fillMaxWidth()
         )
-        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()){
-            UnitDropdown(selectedUnit = selectedDiameterUnit){ selectedDiameterUnit = it }
-            UnitDropdown(selectedUnit = selectedHeightUnit){ selectedHeightUnit = it }
+        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+            UnitDropdown(selectedUnit = selectedDiameterUnit) { selectedDiameterUnit = it }
+            UnitDropdown(selectedUnit = selectedHeightUnit) { selectedHeightUnit = it }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
