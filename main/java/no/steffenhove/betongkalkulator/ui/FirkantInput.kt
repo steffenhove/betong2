@@ -6,8 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import no.steffenhove.betongkalkulator.UnitDropdown
 import no.steffenhove.betongkalkulator.Unit
+import no.steffenhove.betongkalkulator.UnitDropdown
 
 @Composable
 fun FirkantInput(onCalculateClick: (String, String, String, Unit, Unit, Unit) -> Unit) {
@@ -44,4 +44,9 @@ fun FirkantInput(onCalculateClick: (String, String, String, Unit, Unit, Unit) ->
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            onCalculateClick(length, width, thickness
+            onCalculateClick(length, width, thickness, selectedLengthUnit, selectedWidthUnit, selectedThicknessUnit)
+        }, modifier = Modifier.fillMaxWidth()) {
+            Text("Beregn")
+        }
+    }
+}
