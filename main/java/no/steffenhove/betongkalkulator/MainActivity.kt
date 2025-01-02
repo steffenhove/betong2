@@ -12,6 +12,44 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.preference.PreferenceManager
 import no.steffenhove.betongkalkulator.ui.*
+import java.util.*
+
+enum class Unit(val display: String) {
+    METER("Meter"),
+    CENTIMETER("Centimeter"),
+    MILLIMETER("Millimeter")
+}
+
+data class Dimensions(val value: Double, val unit: Unit)
+
+data class KjerneInput(val diameter: Dimensions, val height: Dimensions)
+
+data class SquareDimensions(val length: Dimensions, val width: Dimensions, val thickness: Dimensions)
+
+data class TriangleDimensions(val a: Dimensions, val b: Dimensions, val c: Dimensions, val thickness: Dimensions)
+
+fun convertToMeters(value: Double, unit: Unit): Double {
+    return when (unit) {
+        Unit.METER -> value
+        Unit.CENTIMETER -> value / 100
+        Unit.MILLIMETER -> value / 1000
+    }
+}
+
+fun calculateCylinderVolume(diameter: Double, height: Double): Double {
+    val radius = diameter / 2
+    return Math.PI * radius * radius * height
+}
+
+fun calculateCuboidVolume(length: Double, width: Double, thickness: Double): Double {
+    return length * width * thickness
+}
+
+fun calculateTriangleVolume(a: Double, b: Double, c: Double, thickness: Double): Double {
+    val s = (a + b + c) / 2
+    val area = Math.sqrt(s * (s - a) * (s - b) * (s - c))
+    return area * thickness
+}
 
 class MainActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
@@ -55,7 +93,7 @@ fun MainActivityContent(context: Context, prefs: SharedPreferences) {
                 resultText = calculateAndSave(
                     context,
                     "Kjerne",
-                    coreDimensions = CoreDimensions(
+                    coreDimensions = KjerneInput(
                         Dimensions(diameter.toDouble(), diameterUnit),
                         Dimensions(height.toDouble(), heightUnit)
                     ),
@@ -95,104 +133,4 @@ fun MainActivityContent(context: Context, prefs: SharedPreferences) {
         Spacer(Modifier.height(16.dp))
         Text(text = resultText)
     }
-}
-
-fun calculateAndSave(
-    context: Context,
-    shape: String,
-    coreDimensions: CoreDimensions? = null,
-    squareDimensions: SquareDimensions? = null,
-    triangleDimensions: TriangleDimensions? = null,
-    unitSystem: String,
-    weightUnit: String
-): String {
-    var volume = 0.0
-    var weight = 0.0
-
-    when (shape) {
-        "Kjerne" -> {
-            val diameterMeters = convertToMeters(coreDimensions?.diameter?.value ?: 0.0, coreDimensions?.diameter?.unit ?: Unit.METER)
-            val heightMeters = convertToMeters(coreDimensions?.height?.value ?: 0.0, coreDimensions?.height?.unit ?: Unit.METER)
-            volume = calculateCylinderVolume(diameterMeters, heightMeters)
-        }
-        "Firkant" -> {
-            val lengthMeters = convertToMeters(squareDimensions?.length?.value ?: 0.0, squareDimensions?.length?.unit ?: Unit.METER)
-            val widthMeters = convertToMeters(squareDimensions?.width?.value ?: 0.0, squareDimensions?.width?.unit ?: Unit.METER)
-            val thicknessMeters = convertToMeters(squareDimensions?.thickness?.value ?: 0.0, squareDimensions?.thickness?.unit ?: Unit.METER)
-            volume = calculateCuboidVolume(lengthMeters, widthMeters, thicknessMeters)
-        }
-        "Trekant" -> {
-            val aMeters = convertToMeters(triangleDimensions?.sideA?.value ?: 0.0, triangleDimensions?.sideA?.unit ?: Unit.METER)
-            val bMeters = convertToMeters(triangleDimensions?.sideB?.value ?: 0.0, triangleDimensions?.sideB?.unit ?: Unit.METER)
-            val cMeters = convertToMeters(triangleDimensions?.sideC?.value ?: 0.0, triangleDimensions?.sideC?.unit ?: Unit.METER)
-            val thicknessMeters = convertToMeters(triangleDimensions?.thickness?.value ?: 0.0, triangleDimensions?.thickness?.unit ?: Unit.METER)
-            volume = calculateTriangleVolume(aMeters, bMeters, cMeters, thicknessMeters)
-        }
-    }
-
-    weight = calculateWeight(volume, unitSystem, weightUnit)
-    val calculation = "$shape: Volum: ${String.format(Locale.ROOT, "%.2f", volume)}, Vekt: ${String.format(Locale.ROOT, "%.0f", weight)}"
-    saveCalculationToHistory(context, calculation)
-    return calculation
-}
-
-private fun calculateWeight(volume: Double, unitSystem: String, weightUnit: String): Double {
-    val density = DENSITY_CONCRETE // Sett riktig tetthet basert på valg
-    var weight = volume * density
-
-    if (unitSystem == "imperial" && weightUnit == "default" || weightUnit == "lbs") {
-        weight *= 2.20462 // Konverter kg til lbs
-    }
-
-    return weight
-}
-
-private fun saveCalculationToHistory(context: Context, calculation: String) {
-    val sharedPrefs = context.getSharedPreferences("history", Context.MODE_PRIVATE)
-    val editor = sharedPrefs.edit()
-
-    val currentHistory = sharedPrefs.getString("calculations", "[]") ?: "[]"
-
-    val jsonArray = try {
-        JSONArray(currentHistory)
-    } catch (e: Exception) {
-        JSONArray()
-    }
-
-    val newCalculation = JSONObject().apply {
-        put("calculation", calculation)
-        val currentDateTime = LocalDateTime.now()
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val formattedDateTime = currentDateTime.format(formatter)
-        put("datetime", formattedDateTime)
-    }
-
-    jsonArray.put(newCalculation)
-
-    while (jsonArray.length() > 20) {
-        jsonArray.remove(0)
-    }
-
-    editor.putString("calculations", jsonArray.toString())
-    editor.apply()
-}
-
-private fun clearHistory(context: Context) {
-    val sharedPrefs = context.getSharedPreferences("history", Context.MODE_PRIVATE)
-    sharedPrefs.edit().remove("calculations").apply()
-}
-
-private fun deleteSelectedEntries(context: Context, entriesToDelete: List<Int>) {
-    val sharedPrefs = context.getSharedPreferences("history", Context.MODE_PRIVATE)
-    val currentHistory = sharedPrefs.getString("calculations", "[]") ?: "[]"
-    val jsonArray = JSONArray(currentHistory)
-
-    val newJsonArray = JSONArray()
-    for (i in 0 until jsonArray.length()) {
-        if (!entriesToDelete.contains(i)) {
-            newJsonArray.put(jsonArray.get(i))
-        }
-    }
-
-    sharedPrefs.edit().putString("calculations", newJsonArray.toString()).apply()
 }
