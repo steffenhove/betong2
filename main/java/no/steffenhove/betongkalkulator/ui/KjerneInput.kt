@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import no.steffenhove.betongkalkulator.UnitDropdown
-import no.steffenhove.betongkalkulator.Unit
+import no.steffenhove.betongkalkulator.Unit // Importer riktig Unit
 
 @Composable
 fun KjerneInput(onCalculateClick: (String, String, Unit, Unit) -> Unit) {
@@ -30,8 +30,8 @@ fun KjerneInput(onCalculateClick: (String, String, Unit, Unit) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         )
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            UnitDropdown(selectedUnit = selectedDiameterUnit) { selectedDiameterUnit = it }
-            UnitDropdown(selectedUnit = selectedHeightUnit) { selectedHeightUnit = it }
+            UnitDropdown(selectedUnit = selectedDiameterUnit) { unit -> selectedDiameterUnit = unit }
+            UnitDropdown(selectedUnit = selectedHeightUnit) { unit -> selectedHeightUnit = unit }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
