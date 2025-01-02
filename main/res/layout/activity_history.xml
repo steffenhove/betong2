@@ -13,7 +13,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/button_clear_history" />
+        app:layout_constraintBottom_toTopOf="@+id/button_clear_history"
+        android:choiceMode="multipleChoiceModal"/>
 
     <!-- Knapp for å tømme historikk -->
     <Button
