@@ -7,7 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import no.steffenhove.betongkalkulator.Unit
-import no.steffenhove.betongkalkulator.UnitDropdown
+import no.steffenhove.betongkalkulator.ui.UnitDropdown
 
 @Composable
 fun KjerneInput(onCalculateClick: (String, String, Unit, Unit) -> Unit) {
